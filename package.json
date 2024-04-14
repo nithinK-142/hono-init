@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/streamText.ts"
   },
   "dependencies": {
     "hono": "^4.2.3"
