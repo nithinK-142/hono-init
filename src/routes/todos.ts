@@ -1,10 +1,9 @@
 import { Hono } from "hono";
 import { streamText } from "hono/streaming";
-import TodoModel from "../models/todo";
+import TodoModel, { ITodo } from "../models/todo";
 
-export const todosRouter = new Hono<{ Bindings: { app: Hono } }>().get(
-  "/",
-  async (c) => {
+export const todosRouter = new Hono<{ Bindings: { app: Hono } }>()
+  .get("/", async (c) => {
     const isCompletedParam = c.req.query("isCompleted");
     const isCompleted = isCompletedParam === "true";
 
@@ -23,5 +22,29 @@ export const todosRouter = new Hono<{ Bindings: { app: Hono } }>().get(
         console.log(error.message);
       }
     });
-  }
-);
+  })
+  .post("/", async (c) => {
+    const newTodo: ITodo = await c.req.json();
+    try {
+      if (!newTodo.task) {
+        c.status(400);
+        return c.json({ message: "Invalid task field" });
+      }
+
+      if (
+        newTodo.isCompleted !== undefined &&
+        typeof newTodo.isCompleted !== "boolean"
+      ) {
+        c.status(400);
+        return c.json({ message: "Invalid isCompleted field" });
+      }
+
+      await TodoModel.create(newTodo);
+      c.status(200);
+      return c.json("Task added 👍");
+    } catch (error: any) {
+      console.log(error.message);
+      c.status(500);
+      return c.json({ message: "Internal server error!" });
+    }
+  });
