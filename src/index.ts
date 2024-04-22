@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import { streamTextRouter } from "./routes/streamText";
 import { dbConnect } from "./database/config";
-import TodoModel from "./models/todo";
 
 const app = new Hono();
 
@@ -9,15 +8,8 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-app.route("/", streamTextRouter);
+app.route("/api/v1/stream", streamTextRouter);
 
-dbConnect()
-  .then(async () => {
-    const todos = await TodoModel.find();
-    console.log(todos);
-  })
-  .catch((err) => {
-    console.log(err.message);
-  });
+dbConnect();
 
 export default app;
