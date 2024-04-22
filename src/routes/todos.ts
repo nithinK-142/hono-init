@@ -47,4 +47,17 @@ export const todosRouter = new Hono<{ Bindings: { app: Hono } }>()
       c.status(500);
       return c.json({ message: "Internal server error!" });
     }
+  })
+  .patch("/:id", async (c) => {
+    const todoId = c.req.param("id");
+    const updates: Partial<ITodo> = await c.req.json();
+    try {
+      await TodoModel.findByIdAndUpdate(todoId, { $set: updates });
+      c.status(200);
+      return c.json("Edit successfull 👍");
+    } catch (error: any) {
+      console.log(error.message);
+      c.status(500);
+      return c.json({ message: "Internal server error!" });
+    }
   });
