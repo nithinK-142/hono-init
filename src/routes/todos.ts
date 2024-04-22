@@ -60,4 +60,16 @@ export const todosRouter = new Hono<{ Bindings: { app: Hono } }>()
       c.status(500);
       return c.json({ message: "Internal server error!" });
     }
+  })
+  .delete("/:id", async (c) => {
+    const todoId = c.req.param("id");
+    try {
+      await TodoModel.findByIdAndDelete(todoId);
+      c.status(200);
+      return c.json("Todo deleted 👍");
+    } catch (error: any) {
+      console.log(error.message);
+      c.status(500);
+      return c.json({ message: "Internal server error!" });
+    }
   });
